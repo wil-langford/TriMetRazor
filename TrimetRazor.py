@@ -230,9 +230,57 @@ class RazorWindow(QtGui.QMainWindow):
             )
         )
 
+class RazorThinWidget(QtGui.QWidget):
+    def __init__(self, parent=None):
+        super(RazorThinWidget, self).__init__()
+
+        self.cTimer = QtCore.QTimer()
+        self.uiTimer = QtCore.QTimer()
+
+        self.timesModel=RazorListModel(stopID=10760)
+
+        self.secondsSinceLastQuery = self.timesModel.tmr.timeSinceLastQuery
+        self.latestQueryTime = self.timesModel.tmr.latestMyQTime
+
+        self.initUI()
+
+    def initUI(self):
+
+        vBox = QtGui.QVBoxLayout()
+        # grid.setSpacing(10)
+
+        self.tableView = QtGui.QTableView(self)
+        self.tableView.setModel(self.timesModel)
+        self.tableView.clicked.connect(self.updateTimes)
+        self.tableView.horizontalHeader().setStretchLastSection(True)
+        self.tableView.verticalHeader().setResizeMode(QtGui.QHeaderView.ResizeToContents)
+
+        vBox.addWidget(self.tableView,1)
+        vBox.setContentsMargins(0,0,0,0)
+
+        self.cTimer.start(60*1000)
+        self.cTimer.timeout.connect(self.updateTimes)
+
+        self.uiTimer.start(1*1000)
+        self.uiTimer.timeout.connect(self.redisplay)
+
+        self.setLayout(vBox)
+
+        self.setGeometry(1000, 900, 1920//3, 90)
+        self.setWindowFlags(self.windowFlags() |  QtCore.Qt.WindowStaysOnTopHint)
+        self.setWindowTitle('TriMet Razor')
+        self.show()
+
+    def updateTimes(self):
+        self.timesModel.updateTimes()
+
+    def redisplay(self):
+        self.timesModel.emitAllDataChanged()
+
+
 def main():
     app = QtGui.QApplication(sys.argv)
-    ex = RazorWindow()
+    ex = RazorThinWidget()
     sys.exit(app.exec_())
 
 
