@@ -98,6 +98,7 @@ class RazorListModel(QtCore.QAbstractListModel):
                 pixmap.fill(color)
                 return pixmap
 
+
 class RazorListView(QtGui.QListView):
     def __init__(self, parent=None):
         super(RazorListView, self).__init__(parent=parent)
@@ -112,16 +113,15 @@ class RazorListView(QtGui.QListView):
         self.parent.move(x-x_w, y-y_w)
 
 
-
 class RazorThinWidget(QtGui.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, stopID=10760):
         super(RazorThinWidget, self).__init__()
 
         self.cTimer = QtCore.QTimer()
         self.uiTimer = QtCore.QTimer()
 
         # self.timesModel=RazorListModel(stopID=10751, parent=self)
-        self.timesModel=RazorListModel(stopID=10760, parent=self)
+        self.timesModel=RazorListModel(stopID=stopID, parent=self)
 
         self.secondsSinceLastQuery = self.timesModel.tmr.timeSinceLastQuery
         self.latestQueryTime = self.timesModel.tmr.latestMyQTime
@@ -134,45 +134,23 @@ class RazorThinWidget(QtGui.QWidget):
         self.initUI()
 
     def initUI(self):
-        """
-        exitAction = QtGui.QAction(QtGui.QIcon('/usr/share/icons/oxygen/128x128/actions/application-exit.png'),
-                                   '&Exit',
-                                   self)
-        exitAction.setShortcut(
-            QtGui.QKeySequence('Ctrl+Q')
-        )
-        exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(QtGui.qApp.quit)
-        exitAction.setShortcutContext(QtCore.Qt.ApplicationShortcut)
-        self.addAction(exitAction)
-
-        frameAction = QtGui.QAction(
-            QtGui.QIcon(QtGui.QPixmap(10,10)),
-            '&Frame', self)
-        frameAction.setShortcut('Ctrl+F')
-        frameAction.setStatusTip('Toggle Window Frame')
-        frameAction.triggered.connect(self.toggleFrame)
-        frameAction.setShortcutContext(QtCore.Qt.ApplicationShortcut)
-        self.addAction(frameAction)
 
         shortcut = QtGui.QShortcut(self)
         shortcut.setKey("Ctrl+Q")
         shortcut.setContext(QtCore.Qt.ApplicationShortcut)
         shortcut.activated.connect(QtGui.qApp.quit)
-        """
 
         vBox = QtGui.QVBoxLayout()
 
         self.listView = RazorListView(self)
         self.listView.setModel(self.timesModel)
-        # self.listView.clicked.connect(self.updateTimes)
         self.listView.setContentsMargins(0,0,0,0)
         self.listView.setMinimumSize(QtCore.QSize(200,10))
         self.listView.setStyleSheet('''
                 QWidget {
                    background-color: black;
                    color: white;
-                   font-size: 8pt;
+                   font-size: 6pt;
                 }
                 ''')
 
@@ -201,7 +179,7 @@ class RazorThinWidget(QtGui.QWidget):
 
     def redisplay(self):
         self.timesModel.emitAllDataChanged()
-        self.resize(530,self.timesModel.rowCount()*(self.timesModel.rowHeight+2)+2)
+        self.resize(530,self.timesModel.rowCount()*(self.timesModel.rowHeight+2)+4)
 
     def toggleFrame(self):
         if self.showFrame:
@@ -218,9 +196,9 @@ class RazorThinWidget(QtGui.QWidget):
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    ex = RazorThinWidget()
+    app.setStyle("cleanlooks")
+    ex = RazorThinWidget(stopID=10760)
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     main()
