@@ -1,0 +1,21 @@
+None of the TriMet apps out there did exactly what I
+wanted, and this does.  It's a prototype right now;
+if there's interest, I may actually make more than just
+something for personal use.
+
+The "razors" are the things that actually slice out
+exactly the information I want from the *flood* of
+data that TriMet provides.  They're all in Razors.py.
+Each razor spits out only a list of estimated arrival
+times for a single TriMet StopID in seconds until
+vehicle arrival.  The only razor that exists right now
+is the Streetcar one.  No bus or MAX stops are
+supported yet, because I almost never use them.
+
+TriMetRazor.py stores the GUI.  The StopID is hard coded
+in here along with most everything else.
+
+I wrote this with Python 2.7, Qt4, and PyQt4 using
+versions available on 2014-05-26.
+
+  -Wil
