@@ -112,6 +112,9 @@ class RazorListView(QtGui.QListView):
         x_w, y_w = self.offset.x(), self.offset.y()
         self.parent.move(x-x_w, y-y_w)
 
+    def mouseDoubleClickEvent(self, QMouseEvent):
+        self.parent.updateTimes()
+
 
 class RazorThinWidget(QtGui.QWidget):
     def __init__(self, parent=None, stopID=10760):
@@ -134,11 +137,6 @@ class RazorThinWidget(QtGui.QWidget):
         self.initUI()
 
     def initUI(self):
-
-        shortcut = QtGui.QShortcut(self)
-        shortcut.setKey("Ctrl+Q")
-        shortcut.setContext(QtCore.Qt.ApplicationShortcut)
-        shortcut.activated.connect(QtGui.qApp.quit)
 
         vBox = QtGui.QVBoxLayout()
 
@@ -171,6 +169,16 @@ class RazorThinWidget(QtGui.QWidget):
                             | QtCore.Qt.FramelessWindowHint
         )
         self.setWindowTitle('TriMet Razor')
+
+        quitShortcut = QtGui.QShortcut(self)
+        quitShortcut.setKey("Ctrl+Q")
+        quitShortcut.setContext(QtCore.Qt.ApplicationShortcut)
+        quitShortcut.activated.connect(QtGui.qApp.quit)
+
+        requeryShortcut = QtGui.QShortcut(self)
+        requeryShortcut.setKey("Ctrl+R")
+        requeryShortcut.setContext(QtCore.Qt.ApplicationShortcut)
+        requeryShortcut.activated.connect(self.updateTimes)
 
         self.show()
 
