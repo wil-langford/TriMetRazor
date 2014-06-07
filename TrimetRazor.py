@@ -113,7 +113,7 @@ class RazorListView(QtGui.QListView):
         self.parent.move(x-x_w, y-y_w)
 
     def mouseDoubleClickEvent(self, QMouseEvent):
-        self.parent.updateTimes()
+        self.model().updateTimes()
 
 
 class RazorThinWidget(QtGui.QWidget):
@@ -122,6 +122,7 @@ class RazorThinWidget(QtGui.QWidget):
 
         self.cTimer = QtCore.QTimer()
         self.uiTimer = QtCore.QTimer()
+        self.qTimer = QtCore.QTimer()
 
         # self.timesModel=RazorListModel(stopID=10751, parent=self)
         self.timesModel=RazorListModel(stopID=stopID, parent=self)
@@ -131,6 +132,7 @@ class RazorThinWidget(QtGui.QWidget):
 
         self.updateFrequency = 60
         self.redisplayFrequency = 1
+        self.quitAfterSeconds = 120*60 # two hours
 
         self.showFrame = False
 
@@ -161,9 +163,12 @@ class RazorThinWidget(QtGui.QWidget):
         self.uiTimer.start(self.redisplayFrequency*1000)
         self.uiTimer.timeout.connect(self.redisplay)
 
+        self.qTimer.start(self.quitAfterSeconds*1000)
+        self.qTimer.timeout.connect(QtGui.qApp.quit)
+
         self.setLayout(vBox)
 
-        self.setGeometry(1000, 530, 530, 26)
+        self.setGeometry(0, 530, 530, 26)
         self.setWindowFlags(self.windowFlags()
                             | QtCore.Qt.WindowStaysOnTopHint
                             | QtCore.Qt.FramelessWindowHint
