@@ -12,7 +12,7 @@ class RazorListModel(QtCore.QAbstractListModel):
         self.tmr = Razors.StreetcarRazor(stopID)
         self.updateTimes()
 
-        self.maxSeconds = 11
+        self.maxSeconds = 60
         self.fullBarWidth = 500
         self.rowHeight = 6
 
