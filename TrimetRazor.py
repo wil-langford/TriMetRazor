@@ -9,12 +9,12 @@ class RazorListModel(QtCore.QAbstractListModel):
     def __init__(self, stopID, parent=None):
         super(RazorListModel, self).__init__()
         self.stopID = stopID
-        self.tmr = Razors.StreetcarRazor()
+        self.tmr = Razors.StreetcarRazor(stopID)
         self.updateTimes()
 
-        self.maxSeconds = 60
-        self.fullBarWidth=500
-        self.rowHeight=6
+        self.maxSeconds = 11
+        self.fullBarWidth = 500
+        self.rowHeight = 6
 
     def secondsToPixels(self, s):
         m = max(self._times)
@@ -22,10 +22,14 @@ class RazorListModel(QtCore.QAbstractListModel):
             self.maxSeconds = m
         return int((self.fullBarWidth-30)*s/self.maxSeconds)
 
+    def _refresh_times_from_razor(self):
+        self._times = [int(x[0]) for x in self.tmr.next_up() if 'NS' in x[1]]
+
     def updateTimes(self):
         self.beginResetModel()
-        self.tmr.getArrivals(self.stopID)
-        self._times = self.tmr.nextUp(onlyReturnResultsContaining='NS')
+        self.tmr.query_arrivals()
+        self._refresh_times_from_razor()
+        print self._times
         self.endResetModel()
 
     def emitAllDataChanged(self):
@@ -47,7 +51,7 @@ class RazorListModel(QtCore.QAbstractListModel):
             return len(self._times) + 1
 
     def data(self, QModelIndex, int_role=None):
-        self._times = self.tmr.nextUp(onlyReturnResultsContaining='NS')
+        self._refresh_times_from_razor()
         row = QModelIndex.row()
 
         if int_role == QtCore.Qt.SizeHintRole:
@@ -80,7 +84,7 @@ class RazorListModel(QtCore.QAbstractListModel):
                 pixmap.fill(color)
                 return pixmap
         else:
-            sec = -int(self.tmr.timeSinceLastQuery())
+            sec = -int(self.tmr.time_since_last_query())
 
             if int_role == QtCore.Qt.DisplayRole:
                 return "seconds since last query: {}".format(sec)
@@ -127,8 +131,8 @@ class RazorThinWidget(QtGui.QWidget):
         # self.timesModel=RazorListModel(stopID=10751, parent=self)
         self.timesModel=RazorListModel(stopID=stopID, parent=self)
 
-        self.secondsSinceLastQuery = self.timesModel.tmr.timeSinceLastQuery
-        self.latestQueryTime = self.timesModel.tmr.latestMyQTime
+        self.secondsSinceLastQuery = self.timesModel.tmr.time_since_last_query
+        self.latestQueryTime = self.timesModel.tmr.time_since_last_query()
 
         self.updateFrequency = 60
         self.redisplayFrequency = 1
